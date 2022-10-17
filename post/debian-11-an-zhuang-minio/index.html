@@ -1,0 +1,221 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>debian11 安装 minio | Gridea</title>
+<link rel="shortcut icon" href="https://happyjustyn.github.io/favicon.ico?v=1666015321144">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://happyjustyn.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="debian11 安装 minio | Gridea - Atom Feed" href="https://happyjustyn.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1. 下载 minio 服务端致执行程序, 并授予可执行权限
+wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio
+
+如果..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://happyjustyn.github.io">
+  <img class="avatar" src="https://happyjustyn.github.io/images/avatar.png?v=1666015321144" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              debian11 安装 minio
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-08-06
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h2 id="1-下载-minio-服务端致执行程序-并授予可执行权限">1. 下载 minio 服务端致执行程序, 并授予可执行权限</h2>
+<pre><code>wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio
+</code></pre>
+<p>如果 linux 中下载缓慢, 可以直接打开上面的链接, 下载下来, 上传到 linux 中.</p>
+<pre><code>chmod +x /usr/local/bin/minio
+</code></pre>
+<h2 id="2-设置开机启动">2. 设置开机启动</h2>
+<h3 id="a-下载-minioservice-文件">a. 下载 minio.service 文件</h3>
+<pre><code>wget https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/minio.service -O /etc/systemd/system/minio.service
+</code></pre>
+<p>如果下载不了, 直接打开上面的链接, 复制内容, <code>vim /etc/systemd/system/minio.service</code>, 把内容粘贴即可.</p>
+<h3 id="b-修改-minioservice-文件">b. 修改 minio.service 文件</h3>
+<p>注释掉规定的用户和组, 如下:</p>
+<pre><code># User=minio-user
+# Group=minio-user
+</code></pre>
+<h3 id="c-添加-minio-环境变量文件">c. 添加 minio 环境变量文件</h3>
+<p><code>vim /etc/default/minio</code></p>
+<pre><code># 指定数据存储目录(注意这个目录要存在)
+MINIO_VOLUMES=&quot;/root/minio-dir&quot;
+
+# 指定监听端口(api 端口: 9000, 控制台端口: 9001)
+MINIO_OPTS=&quot;--address :9000  --console-address :9001&quot;
+
+# Root user for the server.
+MINIO_ROOT_USER=admin
+
+# Root secret for the server.
+MINIO_ROOT_PASSWORD=12345678
+</code></pre>
+<h3 id="d-防火墙开启-9000-和-9001-端口">d. 防火墙开启 9000 和 9001 端口</h3>
+<pre><code>ufw allow 9000/tcp
+ufw allow 9001/tcp
+</code></pre>
+<p>现在可以使用 <code>systemctl</code> 命令管理 minio 服务了</p>
+<h2 id="3-访问控制台">3. 访问控制台</h2>
+<p>地址: <code>hostip:9001</code><br>
+访问 <code>host:9000</code> 也会重定向到上面的地址</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E4%B8%8B%E8%BD%BD-minio-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%87%B4%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F-%E5%B9%B6%E6%8E%88%E4%BA%88%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%9D%83%E9%99%90">1. 下载 minio 服务端致执行程序, 并授予可执行权限</a></li>
+<li><a href="#2-%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8">2. 设置开机启动</a>
+<ul>
+<li><a href="#a-%E4%B8%8B%E8%BD%BD-minioservice-%E6%96%87%E4%BB%B6">a. 下载 minio.service 文件</a></li>
+<li><a href="#b-%E4%BF%AE%E6%94%B9-minioservice-%E6%96%87%E4%BB%B6">b. 修改 minio.service 文件</a></li>
+<li><a href="#c-%E6%B7%BB%E5%8A%A0-minio-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%96%87%E4%BB%B6">c. 添加 minio 环境变量文件</a></li>
+<li><a href="#d-%E9%98%B2%E7%81%AB%E5%A2%99%E5%BC%80%E5%90%AF-9000-%E5%92%8C-9001-%E7%AB%AF%E5%8F%A3">d. 防火墙开启 9000 和 9001 端口</a></li>
+</ul>
+</li>
+<li><a href="#3-%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E5%8F%B0">3. 访问控制台</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://happyjustyn.github.io/post/guan-yu-sm4-jia-mi-suan-fa-zai-java-xiang-mu-zhong-shi-yong-de-yi-xie-zong-jie/">
+              <h3 class="post-title">
+                关于 SM4 加密算法在 Java 项目中使用的一些总结
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://happyjustyn.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,204 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>关于 SM4 加密算法在 Java 项目中使用的一些总结 | Gridea</title>
+<link rel="shortcut icon" href="https://happyjustyn.github.io/favicon.ico?v=1666015321144">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://happyjustyn.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="关于 SM4 加密算法在 Java 项目中使用的一些总结 | Gridea - Atom Feed" href="https://happyjustyn.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="SM4 基本介绍
+SM4 是一种分组加密算法, 分组大小(块大小)为 128 位(bit), 即 16 字节(Byte), 密码长度也为 128 位, 类似的算法还有常用的 AES 加密算法, 两者的加密原理类似.
+常用加密模式
+分组加密算..." />
+    <meta name="keywords" content="SM4,国密算法,分组加密" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://happyjustyn.github.io">
+  <img class="avatar" src="https://happyjustyn.github.io/images/avatar.png?v=1666015321144" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              关于 SM4 加密算法在 Java 项目中使用的一些总结
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-07-27
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://happyjustyn.github.io/tag/sIT51rd-M/" class="post-tag">
+                  # SM4
+                </a>
+              
+                <a href="https://happyjustyn.github.io/tag/WvMXFHwxzl/" class="post-tag">
+                  # 国密算法
+                </a>
+              
+                <a href="https://happyjustyn.github.io/tag/a2dn1hJAd7/" class="post-tag">
+                  # 分组加密
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h2 id="sm4-基本介绍">SM4 基本介绍</h2>
+<p>SM4 是一种分组加密算法, 分组大小(块大小)为 128 位(bit), 即 16 字节(Byte), 密码长度也为 128 位, 类似的算法还有常用的 AES 加密算法, 两者的加密原理类似.</p>
+<h2 id="常用加密模式">常用加密模式</h2>
+<p>分组加密算法有多种加密模式, 比较常用的是 CBC 模式, 具体了解可以参考这篇博文: <a href="https://www.cnblogs.com/11sgXL/p/13607083.html"><em>分组加密算法的几种工作模式</em></a>, 该模式中的初始向量 <strong>IV</strong> 的长度, 通常与分组大小一致.</p>
+<h2 id="java-中的填充模式-pkcs5padding">Java 中的填充模式 PKCS5Padding</h2>
+<p>分组加密通常需要对明文数据进行字节填充, 以使得明文长度为分组大小的整倍数. 常用的填充模式为 <code>PKCS7Padding</code> , 但是 Java 中没有 PKCS7Padding . 实际上 Java 中的 <strong>PKCS5Padding</strong> 指的就是 <strong>PKCS7Padding</strong> , 这可能是一个 Java 的历史遗留问题, 需要注意下.</p>
+<p>两者的区别如下:</p>
+<blockquote>
+<p>The difference between the PKCS#5 and PKCS#7 padding mechanisms is the block size; PKCS#5 padding is defined for 8-byte block sizes, PKCS#7 padding would work for any block size from 1 to 255 bytes. So fundamentally PKCS#5 padding is a subset of PKCS#7 padding for 8 byte block sizes.</p>
+</blockquote>
+<h2 id="计算加密后的文件大小">计算加密后的文件大小</h2>
+<p>公式如下:</p>
+<pre><code>cipherLen = (clearLen/16 + 1) * 16;
+</code></pre>
+<p>Please note that if the clear-text is multiple of block size, a whole new block is needed for padding. Say you clear-text is 16 bytes. The cipher-text will take 32 bytes.</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#sm4-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D">SM4 基本介绍</a></li>
+<li><a href="#%E5%B8%B8%E7%94%A8%E5%8A%A0%E5%AF%86%E6%A8%A1%E5%BC%8F">常用加密模式</a></li>
+<li><a href="#java-%E4%B8%AD%E7%9A%84%E5%A1%AB%E5%85%85%E6%A8%A1%E5%BC%8F-pkcs5padding">Java 中的填充模式 PKCS5Padding</a></li>
+<li><a href="#%E8%AE%A1%E7%AE%97%E5%8A%A0%E5%AF%86%E5%90%8E%E7%9A%84%E6%96%87%E4%BB%B6%E5%A4%A7%E5%B0%8F">计算加密后的文件大小</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://happyjustyn.github.io/post/hello-gridea/">
+              <h3 class="post-title">
+                Hello Gridea
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://happyjustyn.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
